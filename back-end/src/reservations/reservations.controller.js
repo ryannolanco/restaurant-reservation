@@ -4,24 +4,25 @@ const asyncErrorBoundary = require('../errors/asyncErrorBoundary')
 
 /* ---- Helper Functions ---- */
 const requiredProperties = [
-  'first_name',
-  'last_name',
-  'mobile_number',
-  'reservation_date',
-  'reservation_time',
-  'people',
+  "first_name",
+  "last_name",
+  "mobile_number",
+  "reservation_date",
+  "reservation_time",
+  "people",
 ];
 
 //Check if incoming post request has all necessary fields
 function bodyDataHasFields(requiredProperties) {
   return function (req, res, next) {
     const { data = {} } = req.body;
-
     for (const property of requiredProperties) {
       if (!data[property]) {
-        return next({ status: 400, message: `Reservation must include ${property}` })
+        console.log(data)
+        return next({ status: 400, message: `Reservation must include ${property}.` })
       }
     }
+    
     next()
   };
 }
@@ -34,7 +35,7 @@ function reservationDateIsValid(req, res, next) {
 
   // Validate that the date is an actual date and not an "Invalid Date"
   if (!(parsedDate instanceof Date) || isNaN(parsedDate)) {
-    return next({ status: 400, message: 'reservation_date must be a valid date' });
+    return next({ status: 400, message: "reservation_date must be a valid date" });
   }
 
   next()
@@ -47,7 +48,7 @@ function reservationTimeIsValid(req, res, next) {
   const timeRegex = /^(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)$/;
 
   if (!timeRegex.test(reservation_time)) {
-    return next({ status: 400, message: 'Invalid reservation_time format' })
+    return next({ status: 400, message: "Invalid reservation_time format" })
   }
 
   next()
@@ -58,8 +59,8 @@ function peopleIsValid(req, res, next) {
   const { data: { people } = {} } = req.body;
 
 
-  if (typeof people !== 'number' || !Number.isFinite(people)) {
-    return next({ status: 400, message: 'people must be a valid number' })
+  if (typeof people !== "number" || !Number.isFinite(people)) {
+    return next({ status: 400, message: "people must be a valid number" })
   }
 
   next()

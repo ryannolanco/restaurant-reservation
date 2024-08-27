@@ -50,6 +50,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "knex": "^3.1.0",
-    "pg": "^8.12.0"
+    "pg": "^8.12.0",
+    "react-router-dom": "^5.3.4"
   }
 }
