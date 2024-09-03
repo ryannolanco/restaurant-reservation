@@ -1,6 +1,7 @@
-import { useState, React } from "react"
+import React, { useState } from "react"
 import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
+import ErrorAlert from "../layout/ErrorAlert";
 // const apiUrl = process.env.REACT_APP_API_BASE_URL;
 
 const initialFormState = {
@@ -13,9 +14,9 @@ const initialFormState = {
 }
 
 
-function NewReservation({date, setDate}) {
- 
-  
+function NewReservationForm({ date, setDate }) {
+
+  const [errors, setErrors] = useState(null)
   const [formData, setFormData] = useState({ ...initialFormState })
   const history = useHistory();
 
@@ -27,20 +28,20 @@ function NewReservation({date, setDate}) {
     const signal = controller.signal;
 
     try {
-      console.log(formData)
-      const response = await createReservation({data: formData}, signal);
-      console.log('Reservation created:', response);
+      const response = await createReservation({ data: formData }, signal);
+      console.log(`Reservation Created: ${response}`)
+      setDate(formData.reservation_date)
+      setFormData({ ...initialFormState })
+      setErrors(null)
+      history.push(`/reservations?date=${date}`)
     } catch (error) {
-      console.error('Error creating reservation:', error);
+      setErrors(error)
     }
-    setDate(formData.reservation_date)
-    setFormData({ ...initialFormState })
-    history.push(`/reservations?date=${date}`)
-    
   }
 
   function handleCancel() {
-
+    setFormData({ ...initialFormState })
+    history.goBack()
   }
 
 
@@ -56,9 +57,10 @@ function NewReservation({date, setDate}) {
   return (
     <div className="new-reservation-form">
       <h2>New Reservation</h2>
-      <form onSubmit={handleSubmit}>
-        Name:
+      <ErrorAlert className="alert alert-danger" error={errors} />
+      <form onSubmit={handleSubmit}>    
         <label htmlFor="first_name">
+        First Name:
           <input
             id="first_name"
             type="text"
@@ -120,15 +122,17 @@ function NewReservation({date, setDate}) {
           />
         </label>
         <br />
-        <button onClick={handleCancel}>
-          Cancel
-        </button>
-        <button type="submit">
-          Submit
-        </button>
+        <div >
+          <button type="button" onClick={handleCancel}>
+            Cancel
+          </button>
+          <button type="submit">
+            Submit
+          </button>
+        </div>
       </form>
     </div>
   )
 }
 
-export default NewReservation
+export default NewReservationForm

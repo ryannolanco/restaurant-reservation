@@ -1,6 +1,6 @@
 const service = require('./reservations.service')
 const asyncErrorBoundary = require('../errors/asyncErrorBoundary')
-
+const moment = require('moment');
 
 /* ---- Helper Functions ---- */
 const requiredProperties = [
@@ -22,7 +22,7 @@ function bodyDataHasFields(requiredProperties) {
         return next({ status: 400, message: `Reservation must include ${property}.` })
       }
     }
-    
+
     next()
   };
 }
@@ -33,22 +33,39 @@ function reservationDateIsValid(req, res, next) {
 
   const parsedDate = new Date(reservation_date);
 
-  // Validate that the date is an actual date and not an "Invalid Date"
   if (!(parsedDate instanceof Date) || isNaN(parsedDate)) {
     return next({ status: 400, message: "reservation_date must be a valid date" });
   }
+
+  if (parsedDate.toLocaleString('en-US', { timeZone: "UTC", weekday: "long" }) === "Tuesday") {
+    return next({ status: 400, message: "Restaurant closed on Tuesdays" });
+  }
+
+  const now = moment()
+  const reservationDate = moment(reservation_date)
+  if (reservationDate.isBefore(now, 'day')) {
+    return next({ status: 400, message: "Date must be in the future." })
+  };
 
   next()
 
 }
 //check is reservation_time is a time
 function reservationTimeIsValid(req, res, next) {
-  const { data: { reservation_time } = {} } = req.body;
+  const { data: { reservation_time, reservation_date } = {} } = req.body;
 
   const timeRegex = /^(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)$/;
 
   if (!timeRegex.test(reservation_time)) {
     return next({ status: 400, message: "Invalid reservation_time format" })
+  }
+
+  const reservationDateTime = moment(`${reservation_date} ${reservation_time}`, 'YYYY-MM-DD HH:mm');
+  const openingTime = moment(`${reservation_date} 10:30`, 'YYYY-MM-DD HH:mm');
+  const closingTime = moment(`${reservation_date} 21:30`, 'YYYY-MM-DD HH:mm');
+
+  if (!reservationDateTime.isBetween(openingTime, closingTime, null, '[]')) {
+    return next({ status: 400, message: 'Restaurant reservations are only available from 10:30am - 9:30pm' });
   }
 
   next()
@@ -66,7 +83,16 @@ function peopleIsValid(req, res, next) {
   next()
 }
 
+async function reservationExists(req, res, next) {
+  const reservation = await service.readReservation(req.params.reservation_id)
+  if (reservation) {
+    res.locals.reservation = reservation
+    return next()
+  }
+  next({status: 400, message: "Reservation does not exist."})
+}
 
+/* ---- CRUD Functions ---- */
 
 // List handler for reservation resources
 
@@ -82,6 +108,13 @@ async function createReservation(req, res) {
   res.status(201).json({ data })
 }
 
+async function readReservation(req, res) {
+  const data = res.locals.reservation
+  res.status(200).json({data})
+}
+
+
+
 
 module.exports = {
   list: asyncErrorBoundary(listByDate),
@@ -91,5 +124,8 @@ module.exports = {
     reservationTimeIsValid,
     peopleIsValid,
     asyncErrorBoundary(createReservation),
-  ]
+  ],
+  read: [
+    asyncErrorBoundary(reservationExists), asyncErrorBoundary(readReservation)
+  ],
 };
