@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { listTables, updateTable } from "../utils/api";
+import { listTables, updateTable, updateReservationStatus } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
 
@@ -35,6 +35,9 @@ function SeatReservation() {
     return () => abortController.abort();
   }, []);
 
+
+
+  //adds reservation_id to table and changes reservation status to "seated"
   async function handleSeatingTable(event) {
     event.preventDefault();
 
@@ -42,14 +45,25 @@ function SeatReservation() {
     const signal = controller.signal;
 
     try {
-      const response = await updateTable(formData, signal);
-      console.log(`Updated Table: ${response}`)
+
+      //updates the status to seated on reservation
+      const reservationResponse = await updateReservationStatus(reservation_id, "seated", signal)
+
+      //updates the table to hold the reservation table effectively making the table occupied
+      const tableResponse = await updateTable(formData, signal);
+      console.log(`Updated Table: ${tableResponse}`)
+      console.log(`Updated Table: ${reservationResponse}`)
+
       setFormData({...initialFormState})
       history.push('/dashboard')
     } catch (error) {
       setTablesError(error)
     }
   }
+
+
+
+  //display mapping
 
   const displayedTables = tables.map((table) => (
     <option key={table.table_id} value={table.table_id}>

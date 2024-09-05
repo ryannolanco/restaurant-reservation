@@ -126,6 +126,24 @@ export async function updateTable(formData, signal) {
   return await fetchJson(url, options, []);
 }
 
+export async function updateReservationStatus(reservation_id, status, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}/status`);
+
+  const reservationStatus = { data: { status } };
+  const options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(reservationStatus),
+    signal,
+  };
+
+  return await fetchJson(url, options, [])
+}
+
+
+
 export async function setReservationAtTable(formData, signal) {
   const url = new URL(`${API_BASE_URL}/tables/${formData.table_id}/seat`);
   const options = {
@@ -138,4 +156,15 @@ export async function setReservationAtTable(formData, signal) {
   };
 
   return await fetchJson(url, options, []);
+}
+
+export async function deleteReservationFromTable(table_id, signal) {
+  const url = new URL(`${API_BASE_URL}/tables/${table_id}/seat`);
+  const options = {
+    method: "DELETE",
+    signal,
+  };
+
+  return await fetchJson(url, options, [])
+
 }

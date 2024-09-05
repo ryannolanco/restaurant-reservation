@@ -27,7 +27,16 @@ function update(updatedTable) {
   return knex("tables")
     .select("*")
     .where({ table_id: updatedTable.table_id })
-    .update(updatedTable, "*")
+    .update(updatedTable)
+    .returning('*')
+    .then((updatedRecords) => updatedRecords[0]);
+}
+
+function deleteSeatingFromTable(table_id) {
+  return knex("tables")
+    .where({ table_id })
+    .update({ reservation_id: null })
+    .returning('*')
     .then((updatedRecords) => updatedRecords[0]);
 }
 
@@ -44,4 +53,5 @@ module.exports = {
   readTable,
   readReservation,
   update,
+  deleteSeatingFromTable,
 }

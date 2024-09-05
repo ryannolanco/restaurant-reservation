@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { Redirect, Route, Switch } from "react-router-dom";
 import Dashboard from "../dashboard/Dashboard";
 import NotFound from "./NotFound";
-import { today } from "../utils/date-time";
+
 import NewReservationForm from "../reservations/NewReservationForm"
 import SeatReservation from "../reservations/SeatReservation";
 import NewTableForm from "../tables/NewTableForm";
@@ -15,9 +15,7 @@ import NewTableForm from "../tables/NewTableForm";
  * @returns {JSX.Element}
  */
 function Routes() {
-  const [date, setDate] = useState(today())
   
-  //creating a state so our date can be handled and changed by various components
   return (
     <Switch>
       <Route exact={true} path="/">
@@ -27,7 +25,7 @@ function Routes() {
         <Redirect to={"/dashboard"} />
       </Route>
       <Route path="/reservations/new">
-        <NewReservationForm date={date} setDate={setDate} />
+        <NewReservationForm  />
       </Route>
       <Route path="/reservations/:reservation_id/seat">
         <SeatReservation />
@@ -36,7 +34,7 @@ function Routes() {
         <NewTableForm />
       </Route>
       <Route path="/dashboard">
-        <Dashboard date={date} setDate={setDate}/>
+        <Dashboard />
       </Route>
       <Route>
         <NotFound />

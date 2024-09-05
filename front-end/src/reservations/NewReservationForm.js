@@ -1,8 +1,7 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
-// const apiUrl = process.env.REACT_APP_API_BASE_URL;
 
 const initialFormState = {
   first_name: "",
@@ -11,16 +10,15 @@ const initialFormState = {
   reservation_date: "",
   reservation_time: "",
   people: 0,
-}
+};
 
+function NewReservationForm() {
 
-function NewReservationForm({ date, setDate }) {
-
-  const [errors, setErrors] = useState(null)
-  const [formData, setFormData] = useState({ ...initialFormState })
+  const [errors, setErrors] = useState(null);
+  const [formData, setFormData] = useState({ ...initialFormState });
   const history = useHistory();
 
-  // a function that handles when the form is submitted
+  // Handle form submission
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -29,38 +27,37 @@ function NewReservationForm({ date, setDate }) {
 
     try {
       const response = await createReservation({ data: formData }, signal);
-      console.log(`Reservation Created: ${response}`)
-      setDate(formData.reservation_date)
-      setFormData({ ...initialFormState })
-      setErrors(null)
-      history.push(`/reservations?date=${date}`)
+      console.log(`Reservation Created: ${response}`);
+      const reservationDate = formData.reservation_date;
+      
+      setFormData({ ...initialFormState });
+      setErrors(null);
+      history.push(`/dashboard?date=${reservationDate}`); // Use formData.reservation_date directly
     } catch (error) {
-      setErrors(error)
+      setErrors(error);
     }
   }
 
   function handleCancel() {
-    setFormData({ ...initialFormState })
-    history.goBack()
+    setFormData({ ...initialFormState });
+    history.goBack();
   }
 
-
-  //handle change function to keep inputs controlled
+  // Handle input changes
   function handleChange({ target }) {
     setFormData({
       ...formData,
       [target.name]: target.name === 'people' ? Number(target.value) : target.value,
-    })
+    });
   }
-
 
   return (
     <div className="new-reservation-form">
       <h2>New Reservation</h2>
       <ErrorAlert className="alert alert-danger" error={errors} />
-      <form onSubmit={handleSubmit}>    
+      <form onSubmit={handleSubmit}>
         <label htmlFor="first_name">
-        First Name:
+          First Name:
           <input
             id="first_name"
             type="text"
@@ -122,7 +119,7 @@ function NewReservationForm({ date, setDate }) {
           />
         </label>
         <br />
-        <div >
+        <div>
           <button type="button" onClick={handleCancel}>
             Cancel
           </button>
@@ -132,7 +129,7 @@ function NewReservationForm({ date, setDate }) {
         </div>
       </form>
     </div>
-  )
+  );
 }
 
-export default NewReservationForm
+export default NewReservationForm;

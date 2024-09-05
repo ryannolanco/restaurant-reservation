@@ -18,7 +18,7 @@ function bodyDataHasFields(requiredProperties) {
     const { data = {} } = req.body;
     for (const property of requiredProperties) {
       if (!data[property]) {
-        console.log(data)
+
         return next({ status: 400, message: `Reservation must include ${property}.` })
       }
     }
@@ -89,8 +89,40 @@ async function reservationExists(req, res, next) {
     res.locals.reservation = reservation
     return next()
   }
-  next({status: 400, message: "Reservation does not exist."})
+  next({ status: 404, message: `Reservation with id: ${req.params.reservation_id} does not exist.` })
 }
+
+
+// reservation status checks 
+
+function statusIsValid(req, res, next) {
+const seatedStatus = res.locals.reservation.status
+const bodyStatus = req.body.data.status
+
+if (!["finished", "seated", "booked"].includes(bodyStatus)) {
+  return next({status:400, message: `Status ${bodyStatus} is not valid`})
+}
+
+if (seatedStatus === "finished") {
+return next({status:400, message: `Reservation is already ${seatedStatus}`})
+}
+
+next()
+
+}
+
+
+function statusIsValidForPost(req, res, next) {
+const seatedStatus = req.body.data.status
+
+if (seatedStatus === "seated" || seatedStatus === "finished") {
+  return next({status: 400, message: `Status ${seatedStatus} is not valid`})
+}
+next()
+}
+
+
+
 
 /* ---- CRUD Functions ---- */
 
@@ -110,16 +142,26 @@ async function createReservation(req, res) {
 
 async function readReservation(req, res) {
   const data = res.locals.reservation
-  res.status(200).json({data})
+  res.status(200).json({ data })
 }
 
+async function updateStatus(req, res) {
 
+  const reservation = {
+    reservation_id: res.locals.reservation.reservation_id,
+    status: req.body.data.status
+  }
+
+  const data = await service.updateStatus(reservation)
+  res.status(200).json({ data })
+}
 
 
 module.exports = {
   list: asyncErrorBoundary(listByDate),
   create: [
     bodyDataHasFields(requiredProperties),
+    statusIsValidForPost,
     reservationDateIsValid,
     reservationTimeIsValid,
     peopleIsValid,
@@ -128,4 +170,5 @@ module.exports = {
   read: [
     asyncErrorBoundary(reservationExists), asyncErrorBoundary(readReservation)
   ],
+  updateStatus: [asyncErrorBoundary(reservationExists), statusIsValid, asyncErrorBoundary(updateStatus) ]
 };
