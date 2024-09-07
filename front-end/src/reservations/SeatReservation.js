@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { listTables, updateTable, updateReservationStatus } from "../utils/api";
+import { listTables, updateTable} from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
 
@@ -47,12 +47,12 @@ function SeatReservation() {
     try {
 
       //updates the status to seated on reservation
-      const reservationResponse = await updateReservationStatus(reservation_id, "seated", signal)
+     // const reservationResponse = await updateReservationStatus(reservation_id, "seated", signal)
 
       //updates the table to hold the reservation table effectively making the table occupied
       const tableResponse = await updateTable(formData, signal);
       console.log(`Updated Table: ${tableResponse}`)
-      console.log(`Updated Table: ${reservationResponse}`)
+     // console.log(`Updated Table: ${reservationResponse}`)
 
       setFormData({...initialFormState})
       history.push('/dashboard')

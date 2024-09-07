@@ -68,6 +68,15 @@ export async function listReservations(params, signal) {
     .then(formatReservationTime);
 }
 
+// get a specific reservation by id 
+export async function getReservation(reservation_id, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}`)
+  return await fetchJson(url, { headers, signal }, [])
+  .then(formatReservationDate)
+  .then(formatReservationTime);
+ }
+ 
+
 /**
  * Retrieves all existing tables.
  * @returns {Promise<[table]>}
@@ -78,6 +87,7 @@ export async function listTables(signal) {
 
   return await fetchJson(url, { headers, signal }, []);
 }
+
 
 
 export async function createReservation(formData, signal) {
@@ -94,6 +104,19 @@ export async function createReservation(formData, signal) {
   return await fetchJson(url, options, []);
 }
 
+export async function updateReservation(formData, reservation_id, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}`);
+  const options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+    signal,
+  };
+
+  return await fetchJson(url, options, []);
+}
 
 export async function createNewTable(formData, signal) {
   const url = new URL(`${API_BASE_URL}/tables`);
@@ -141,7 +164,6 @@ export async function updateReservationStatus(reservation_id, status, signal) {
 
   return await fetchJson(url, options, [])
 }
-
 
 
 export async function setReservationAtTable(formData, signal) {

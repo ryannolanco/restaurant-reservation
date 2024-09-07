@@ -4,9 +4,11 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import Dashboard from "../dashboard/Dashboard";
 import NotFound from "./NotFound";
 
-import NewReservationForm from "../reservations/NewReservationForm"
+import ReservationForm from "../reservations/ReservationForm"
 import SeatReservation from "../reservations/SeatReservation";
 import NewTableForm from "../tables/NewTableForm";
+import SearchNumber from "../reservations/SearchNumber";
+import EditReservations from "../reservations/EditReservations";
 /**
  * Defines all the routes for the application.
  *
@@ -15,7 +17,7 @@ import NewTableForm from "../tables/NewTableForm";
  * @returns {JSX.Element}
  */
 function Routes() {
-  
+
   return (
     <Switch>
       <Route exact={true} path="/">
@@ -25,7 +27,7 @@ function Routes() {
         <Redirect to={"/dashboard"} />
       </Route>
       <Route path="/reservations/new">
-        <NewReservationForm  />
+        <ReservationForm />
       </Route>
       <Route path="/reservations/:reservation_id/seat">
         <SeatReservation />
@@ -35,6 +37,12 @@ function Routes() {
       </Route>
       <Route path="/dashboard">
         <Dashboard />
+      </Route>
+      <Route path="/search">
+        <SearchNumber />
+      </Route>
+      <Route path="/reservations/:reservation_id/edit">
+      <EditReservations/>
       </Route>
       <Route>
         <NotFound />

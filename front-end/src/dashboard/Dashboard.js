@@ -1,57 +1,71 @@
-import React, { useEffect, useState } from "react";
-import { deleteReservationFromTable, listReservations, listTables, updateReservationStatus } from "../utils/api";
+import React, { useEffect, useState, useCallback } from "react";
+import { useLocation, useHistory } from "react-router-dom";
+import { deleteReservationFromTable, listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { next, previous, today } from "../utils/date-time";
-import useQuery from "../utils/useQuery";
-import { useHistory } from "react-router-dom";
-/**
- * Defines the dashboard page.
- * @param date
- *  the date for which the user wants to view reservations.
- * @returns {JSX.Element}
- */
+import ListReservations from "../reservations/ListReservations";
+
 function Dashboard() {
   const history = useHistory();
-  const query = useQuery();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
   const [date, setDate] = useState(query.get("date") || today());
-
   const [tables, setTables] = useState([]);
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
-  //const [deleteReservationFromTableError, setDeleteReservationFromTableError] = useState(null);
   const [tablesError, setTablesError] = useState(null);
 
-  useEffect(loadDashboard, [date]);
-  useEffect(loadTables, []);
-
-  function loadDashboard() {
+  // Memoize loadDashboard
+  const loadDashboard = useCallback(async () => {
     const abortController = new AbortController();
     setReservationsError(null);
-    listReservations({ date }, abortController.signal)
-      .then(setReservations)
-      .catch(setReservationsError);
-    return () => abortController.abort();
-  }
 
-  function loadTables() {
+    try {
+      const reservations = await listReservations({ date }, abortController.signal);
+      setReservations(reservations);
+    } catch (error) {
+      setReservationsError(error);
+    }
+
+    return () => abortController.abort();
+  }, [date]);
+
+  // Memoize loadTables
+  const loadTables = useCallback(async () => {
     const abortController = new AbortController();
-    setReservationsError(null);
-    listTables(abortController.signal)
-      .then(setTables)
-      .catch(setTablesError);
+    setTablesError(null);
+
+    try {
+      const tables = await listTables(abortController.signal);
+      setTables(tables);
+    } catch (error) {
+      setTablesError(error);
+    }
+
     return () => abortController.abort();
-  }
+  }, []);
 
+  useEffect(() => {
+    console.log("Loading dashboard data for date:", date);
+    loadDashboard();
+  }, [date, loadDashboard]);
 
-  /* ---- Button Handlers ---- */
+  useEffect(() => {
+    loadTables();
+  }, [loadTables]);
+
+  // useEffect(() => {
+  //   const queryParams = new URLSearchParams(location.search);
+  //   const newDate = queryParams.get("date") || today();
+  //   setDate(newDate);
+  // }, [location.search]);
+
   function handleDateChange(newDate) {
     setDate(newDate);
     history.push(`?date=${newDate}`); // Update the URL with the new date
   }
 
-  //handle the decision to either finish table seating or cancel
-
-  async function handleFinishButton(table_id, reservation_id, event) {
+  async function handleFinishButton(table_id, event) {
     event.preventDefault();
 
     const controller = new AbortController();
@@ -59,51 +73,30 @@ function Dashboard() {
 
     if (window.confirm("Is this table ready to seat new guests? This cannot be undone")) {
       try {
-         //updates the status to seated on reservation
-        const reservationResponse = await updateReservationStatus(reservation_id, "finished", signal)
-
-        //updates the table to remove reservation from table effectively making the table free
-        const tableResponse = await deleteReservationFromTable(table_id, signal)
-        console.log(`Reservation deleted form table. Response: ${tableResponse}`)
-        console.log(`Reservation status changed to finished. Response: ${reservationResponse}`)
-
-        loadDashboard()
+        await deleteReservationFromTable(table_id, signal);
+        console.log(`Reservation deleted from table. Table ID: ${table_id}`);
+        await loadTables();  // Reload tables after deletion
+        await loadDashboard();  // Reload reservations after deletion
       } catch (error) {
-        console.log(error)
-        //setDeleteReservationFromTableError(error)
+        console.log(error);
       }
     } else {
-      console.log("cancelled")
+      console.log("Cancelled");
     }
   }
-
-  /* ---- Reservations and Tables display ---- */
-
-  const displayedReservations = reservations.map((reservation) => {
-    
-    // Skip rendering if the reservation is finished (handled is API)
-    // if (reservation.status === "finished") {
-    //   return null;
-    // }
-
-    return (
-      <li key={reservation.reservation_id}>
-        <p>{`${reservation.first_name} ${reservation.last_name} for ${reservation.people} at ${reservation.reservation_time}`}</p>
-        <p data-reservation-id-status={reservation.reservation_id}>{`Status: ${reservation.status}`}</p>
-        {reservation.status === "booked" ? (
-          <a href={`/reservations/${reservation.reservation_id}/seat`}>Seat</a>
-        ) : null}
-      </li>
-    );
-  });
-
 
   const displayedTables = tables.map((table) => (
     <li key={table.table_id}>
       <span data-table-id-status={table.table_id}>
-        {table.table_name}
-        {table.reservation_id ? "Occupied" : "Free"}
-        {table.reservation_id ? <button onClick={(event) => handleFinishButton(table.table_id, table.reservation_id, event)} data-table-id-finish={table.table_id}> Finish </button> : null}
+        {table.table_name} {table.reservation_id ? "Occupied" : "Free"}
+        {table.reservation_id && (
+          <button
+            onClick={(event) => handleFinishButton(table.table_id, event)}
+            data-table-id-finish={table.table_id}
+          >
+            Finish
+          </button>
+        )}
       </span>
     </li>
   ));
@@ -115,8 +108,7 @@ function Dashboard() {
         <h4 className="mb-0">Reservations for date {date}</h4>
       </div>
       <ErrorAlert error={reservationsError} />
-      {reservations.length ? <ul>{displayedReservations}</ul> : `No reservations for ${date} `}
-      <br />
+      <ListReservations loadDashboard={loadDashboard} allReservations={reservations} dashboardDate={date} />
       <div className="set-dates-buttons">
         <button onClick={() => handleDateChange(previous(date))}>
           Previous Day

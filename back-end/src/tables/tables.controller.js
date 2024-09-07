@@ -97,6 +97,29 @@ async function reservationExistsAndIdIsValid(req, res, next) {
   next({ status: 404, message: `Reservation with id ${reservation_id} does not exist.` })
 }
 
+
+async function reservationExistsAndIdIsValidForDeletion(req, res, next) {
+  const  reservation_id  = res.locals.table.reservation_id
+  if (!reservation_id) {
+    return next({ status: 400, message: "reservation_id is missing" })
+  }
+  const reservation = await service.readReservation(reservation_id)
+
+  if (reservation) {
+    res.locals.reservation = reservation
+    return next()
+  }
+  next({ status: 404, message: `Reservation with id ${reservation_id} does not exist.` })
+}
+
+async function reservationIsNotSeated(req, res, next) {
+  if (res.locals.reservation.status ==="seated") {
+    return next({status:400, message: "Reservation is already seated"})
+  }
+  next()
+  
+}
+
 // check that body contains data
 function dataExists(req, res, next) {
   if (!req.body.data) {
@@ -124,14 +147,20 @@ async function createTable(req, res) {
 
 ///update the the table to seat a reservation 
 async function updateTable(req, res, next) {
-  
+  console.log(res.locals.reservation)
   const updatedTable = {
     table_id: res.locals.table.table_id,
     table_name: res.locals.table.table_name,
     reservation_id: res.locals.reservation.reservation_id
   }
   const data = service.update(updatedTable);
-  res.status(200).json({ data })
+  const reservation = {
+    reservation_id: res.locals.reservation.reservation_id,
+    status: "seated"
+  }
+  
+ const reservationData =  await reservationsService.updateStatus(reservation);
+  res.status(200).json({ reservationData });
 }
 
 
@@ -141,29 +170,36 @@ async function deleteTableSeating(req, res) {
   const data = await service.deleteSeatingFromTable(table_id);
   console.log(res.locals.table.reservation_id)
 
-  // const reservationData = await reservationsService.updateStatus(, "finished")
+  const reservation = {
+    reservation_id: res.locals.reservation.reservation_id,
+    status: "finished"
+  }
+
+  await reservationsService.updateStatus(reservation)
   res.status(200).json({ data })
 }
 
 module.exports = {
   list: asyncErrorBoundary(listTables),
   create: [
-    bodyDataHasFields(requiredProperties), 
-    tableNameIsValid, 
-    capacityIsValid, 
+    bodyDataHasFields(requiredProperties),
+    tableNameIsValid,
+    capacityIsValid,
     asyncErrorBoundary(createTable)
   ],
   update: [
-    dataExists, 
-    asyncErrorBoundary(reservationExistsAndIdIsValid), 
-    asyncErrorBoundary(tableExists), 
-    tableIsNotOccupied, 
-    sufficientCapacity, 
+    dataExists,
+    asyncErrorBoundary(reservationExistsAndIdIsValid),
+    reservationIsNotSeated,
+    asyncErrorBoundary(tableExists),
+    tableIsNotOccupied,
+    sufficientCapacity,
     asyncErrorBoundary(updateTable)
   ],
   deleteSeatingFromTable: [
-    asyncErrorBoundary(tableExists), 
-    tableIsOccupied, 
+    asyncErrorBoundary(tableExists),
+    tableIsOccupied,
+    asyncErrorBoundary(reservationExistsAndIdIsValidForDeletion),
     asyncErrorBoundary(deleteTableSeating)
   ],
 }
