@@ -54,11 +54,6 @@ function Dashboard() {
     loadTables();
   }, [loadTables]);
 
-  // useEffect(() => {
-  //   const queryParams = new URLSearchParams(location.search);
-  //   const newDate = queryParams.get("date") || today();
-  //   setDate(newDate);
-  // }, [location.search]);
 
   function handleDateChange(newDate) {
     setDate(newDate);
@@ -103,9 +98,12 @@ function Dashboard() {
 
   return (
     <main>
-      <h1>Dashboard</h1>
-      <div className="d-md-flex mb-3">
-        <h4 className="mb-0">Reservations for date {date}</h4>
+      <div className="page-title">
+        <h1>Dashboard</h1>
+      </div>
+
+      <div className="">
+        <h6 className="">Reservations for date {date}</h6>
       </div>
       <ErrorAlert error={reservationsError} />
       <ListReservations loadDashboard={loadDashboard} allReservations={reservations} dashboardDate={date} />
