@@ -19,9 +19,20 @@
 - `DELETE /tables/:table_id/seat`: Free up an occupied table.
 
 ## Screenshots
-
+The Dashboard homepage allows users to view reservations for the current day, as well as seat, edit, and cancel reservations.
 ![dashboard-homepage](https://github.com/user-attachments/assets/dff4b0bd-6f4e-4631-b685-529e2048f817)
 
+New Reservation form allows user to create a new reservation.
+![new-reservation-form](https://github.com/user-attachments/assets/ae5ad960-7d0c-49f8-867d-7f494c060ae1)
+
+Provides feed back if form is filled out incorrectly or if restaurant is closed 
+![restaraunt-closed](https://github.com/user-attachments/assets/70b520df-e866-4238-a389-dcf017a0bfc6)
+
+Search page allows user to search up any reservation by number as well as cancel found reservations
+![search-number](https://github.com/user-attachments/assets/94939712-8c25-4d93-9d3f-8a6868128dc8)
+
+Create a new table with new table page
+![new-table-form](https://github.com/user-attachments/assets/928e7de8-978b-487d-b213-16be0090560f)
 
 ## Summary
 
