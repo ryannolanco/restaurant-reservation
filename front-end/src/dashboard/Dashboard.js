@@ -86,6 +86,7 @@ function Dashboard() {
         {table.table_name} {table.reservation_id ? "Occupied" : "Free"}
         {table.reservation_id && (
           <button
+            className="finish-table-button red-button"
             onClick={(event) => handleFinishButton(table.table_id, event)}
             data-table-id-finish={table.table_id}
           >
@@ -102,29 +103,30 @@ function Dashboard() {
         <h1>Dashboard</h1>
       </div>
 
-      <div className="">
-        <h6 className="">Reservations for date {date}</h6>
+      <div className="reservations-for-date">
+        <h6>Reservations for Date: {date}</h6>
       </div>
       <ErrorAlert error={reservationsError} />
       <ListReservations loadDashboard={loadDashboard} allReservations={reservations} dashboardDate={date} />
-      <div className="set-dates-buttons">
-        <button onClick={() => handleDateChange(previous(date))}>
-          Previous Day
-        </button>
-        <button onClick={() => handleDateChange(today())}>
-          Today
-        </button>
-        <button onClick={() => handleDateChange(next(date))}>
-          Next Day
-        </button>
-      </div>
       <div className="dashboard-tables">
         <h4>Tables</h4>
-        <ul>
+        <ul className="tables-list">
           {displayedTables}
         </ul>
         <ErrorAlert error={tablesError} />
       </div>
+      <div className="set-dates-buttons">
+        <button className="grey-button" onClick={() => handleDateChange(previous(date))}>
+          Previous Day
+        </button>
+        <button className="green-button" onClick={() => handleDateChange(today())}>
+          Today
+        </button>
+        <button className="blue-button" onClick={() => handleDateChange(next(date))}>
+          Next Day
+        </button>
+      </div>
+
     </main>
   );
 }

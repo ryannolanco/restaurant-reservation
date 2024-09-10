@@ -81,7 +81,7 @@ function NewTableForm() {
           <button type="button" onClick={handleCancel}>
             Cancel
           </button>
-          <button type="submit">
+          <button  type="submit">
             Submit
           </button>
         </div>

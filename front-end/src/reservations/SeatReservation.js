@@ -71,8 +71,9 @@ function SeatReservation() {
     </option>
   ));
 
+
   return (
-    <div >
+    <div className="seat-reservation">
       <h1>Seat Table</h1>
       <ErrorAlert className="alert alert-danger" error={tablesError} />
       <form onSubmit={handleSeatingTable}>
@@ -90,6 +91,8 @@ function SeatReservation() {
       </form>
     </div>
   )
+
+  
 }
 
 export default SeatReservation

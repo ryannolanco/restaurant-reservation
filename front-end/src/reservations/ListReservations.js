@@ -34,13 +34,19 @@ function ListReservations({ allReservations, searchedReservations, dashboardDate
           return (
             <li key={reservation.reservation_id}>
               <p>{`${reservation.first_name} ${reservation.last_name} for ${reservation.people} at ${reservation.reservation_time} on ${reservation.reservation_date}`}</p>
-              <p data-reservation-id-status={reservation.reservation_id}>{`Status: ${reservation.status}`}</p>
-              <div className='reservations-a-tag-buttons'>
-                {reservation.status === "booked" ? (
-                  <a href={`/reservations/${reservation.reservation_id}/seat`}>Seat</a>
-                ) : null}
-                <a href={`/reservations/${reservation.reservation_id}/edit`}>Edit</a>
-                <button data-reservation-id-cancel={reservation.reservation_id} onClick={() => handleCancelReservation(reservation.reservation_id)}>Cancel</button>
+              <div className='status-and-buttons'>
+                <p data-reservation-id-status={reservation.reservation_id}>
+                  {`Status: ${reservation.status}`}
+                </p>
+                <div className='reservation-buttons'>
+                  <button className="a-tag-buttons grey-button" data-reservation-id-cancel={reservation.reservation_id} onClick={() => handleCancelReservation(reservation.reservation_id)}>
+                    Cancel
+                  </button>
+                  <a className="a-tag-buttons green-button" href={`/reservations/${reservation.reservation_id}/edit`}>Edit</a>
+                  {reservation.status === "booked" ? (
+                    <a className="a-tag-buttons blue-button" href={`/reservations/${reservation.reservation_id}/seat`}>Seat</a>
+                  ) : null}
+                </div>
               </div>
             </li>
           );
@@ -52,8 +58,8 @@ function ListReservations({ allReservations, searchedReservations, dashboardDate
           return (
             <li key={reservation.reservation_id}>
               <p>{`${reservation.first_name} ${reservation.last_name} for ${reservation.people} at ${reservation.reservation_time}`}</p>
-              <div className='reservations-a-tag-buttons'>
-                <a href={`/reservations/${reservation.reservation_id}/edit`}>Edit</a>
+              <div className='reservations-buttons'>
+                <a className="a-tag-buttons" href={`/reservations/${reservation.reservation_id}/edit`}>Edit</a>
                 <button data-reservation-id-cancel={reservation.reservation_id} onClick={() => handleCancelReservation(reservation.reservation_id)}>Cancel</button>
               </div>
             </li>
@@ -68,7 +74,7 @@ function ListReservations({ allReservations, searchedReservations, dashboardDate
 
   return (
     <div className='list-reservations-display'>
-      {displayedReservations.length ? <ul>{displayedReservations}</ul> : <p>{displayMessage}</p>}
+      {displayedReservations.length ? <ul className='reservations-list'>{displayedReservations}</ul> : <p className='display-message'>{displayMessage}</p>}
     </div>
   );
 }
