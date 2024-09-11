@@ -79,7 +79,7 @@ The Periodic Tables Reservation System is designed to help restaurant managers c
     # Edit the .env file with your database credentials and API settings
     # For now (the tester at thinkful/chegg skills) please create a .env file in the backend folder and use this env variable.
     DATABASE_URL_DEVELOPMENT=postgresql://restaurant_reservation_database_user:q7J1X1RuwcoBusHSXfQzRcb8NM5AAxWG@dpg-cqt4pt2j1k6c73btiltg-a.oregon-postgres.render.com/restaurant_reservation_database?ssl=true
-    #for the frontend .env folder the variable in the .env.sample should work if needed
+    #for the frontend .env folder the variable in the .env.sample should work but if needed please create a .env in the frontend folder with this variable:
     REACT_APP_API_BASE_URL=http://localhost:5001
     ```
 
