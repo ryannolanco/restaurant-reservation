@@ -77,6 +77,8 @@ The Periodic Tables Reservation System is designed to help restaurant managers c
     ```bash
     cp .env.example .env
     # Edit the .env file with your database credentials and API settings
+    # For now (the tester at thinkful/chegg skills) please create a .env file in the backend folder and use this env variable.
+    DATABASE_URL_DEVELOPMENT=postgresql://restaurant_reservation_database_user:q7J1X1RuwcoBusHSXfQzRcb8NM5AAxWG@dpg-cqt4pt2j1k6c73btiltg-a.oregon-postgres.render.com/restaurant_reservation_database?ssl=true
     ```
 
 4. Set up the database:
