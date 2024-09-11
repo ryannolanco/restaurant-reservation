@@ -105,6 +105,26 @@ function ReservationForm() {
     });
   }
 
+  //handle key down of telephone field to only allow allowedkeys and numbers
+  const handleKeyDown = (event) => {
+    const allowedKeys = [
+      "Backspace",
+      "Delete",
+      "ArrowLeft",
+      "ArrowRight",
+      "Tab",
+      "-",
+    ];
+
+    // Prevent the default action if the key is not a number or an allowed key
+    if (
+      !/[0-9]/.test(event.key) && // Only allow numbers
+      !allowedKeys.includes(event.key) // Allow essential keys for navigation
+    ) {
+      event.preventDefault();
+    }
+  };
+
   return (
     <div className="new-reservation-form">
       <h2>{reservation_id ? "Edit Reservation" : "New Reservation"}</h2>
@@ -138,7 +158,9 @@ function ReservationForm() {
             id="mobile_number"
             type="tel"
             name="mobile_number"
+            pattern="^(\d{0,1}-?)?\d{3}-\d{2,3}-\d{3,4}$"
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
             value={formData.mobile_number}
           />
         </div>
