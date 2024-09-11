@@ -158,7 +158,7 @@ function ReservationForm() {
             id="mobile_number"
             type="tel"
             name="mobile_number"
-            pattern="^(\d{0,1}-?)?\d{3}-\d{2,3}-\d{3,4}$"
+            
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             value={formData.mobile_number}

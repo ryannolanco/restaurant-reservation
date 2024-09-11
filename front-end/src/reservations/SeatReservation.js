@@ -65,9 +65,11 @@ function SeatReservation() {
 
   //display mapping
 
-  const displayedTables = tables.map((table) => (
+  const displayedTables = tables
+  .filter((table) => !table.reservation_id) // Only available tables
+  .map((table) => (
     <option key={table.table_id} value={table.table_id}>
-      {!table.reservation_id ? `${table.table_name} - ${table.capacity}` : null}
+      {`${table.table_name} - ${table.capacity}`}
     </option>
   ));
 

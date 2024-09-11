@@ -23,12 +23,7 @@ function Paths() {
       <Route exact={true} path="/reservations">
         <Navigate to={"/dashboard"} />
       </Route>
-      <Route path="/reservations/new">
-        <NewReservationForm />
-      </Route>
-      <Route path="/reservations/:reservation_id/seat">
-        <SeatReservation />
-      </Route>
+   
       <Route path="/reservations/:reservation_id/edit">
         <EditReservations />
       </Route>

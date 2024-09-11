@@ -123,15 +123,6 @@ function statusIsValidForPost(req, res, next) {
 }
 
 
-function reservationNumberIsValid(req, res, next) {
-  let {mobile_number} = req.body.data
-  mobile_number = mobile_number.split("-").join("")
-  if (isNaN(Number(mobile_number))) {
-    console.log(mobile_number)
-    return next({status: 400, message: "mobile_number must be a number, not text. "})
-  }
-  next()
-}
 
 
 
@@ -190,7 +181,6 @@ module.exports = {
     statusIsValidForPost,
     reservationDateIsValid,
     reservationTimeIsValid,
-    reservationNumberIsValid,
     peopleIsValid,
     asyncErrorBoundary(createReservation),
   ],
@@ -203,7 +193,6 @@ module.exports = {
     reservationExists,
     reservationDateIsValid,
     reservationTimeIsValid,
-    reservationNumberIsValid,
     peopleIsValid,
     asyncErrorBoundary(updateReservation),]
 };

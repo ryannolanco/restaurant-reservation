@@ -116,13 +116,7 @@ button:hover {
 }
 
 /* Error alert styling */
-.alert-danger {
-  background-color: #f8d7da;
-  color: #721c24;
-  border-radius: 5px;
-  padding: 15px;
-  margin-top: 15px;
-}
+
 
 
 
@@ -533,15 +527,6 @@ button:hover {
   background-color: #aaa;
 }
 
-/* Error alert styles */
-.alert-danger {
-  background-color: #f8d7da;
-  color: #721c24;
-  border-radius: 5px;
-  padding: 15px;
-  margin-top: 15px;
-}
-
 /* ---- SEAT RESERVATION FORM ---- */
 
 .seat-reservation {
@@ -614,10 +599,3 @@ button:hover {
 }
 
 /* Error alert styles */
-.alert-danger {
-  background-color: #f8d7da;
-  color: #721c24;
-  border-radius: 5px;
-  padding: 15px;
-  margin-bottom: 20px;
-}
