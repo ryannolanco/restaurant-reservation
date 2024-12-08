@@ -1,6 +1,6 @@
 # Periodic Tables Reservation System
 
-[Live Application](<INSERT_DEPLOYMENT_LINK_HERE>)
+[Live Application](https://restaurant-reservation-website.onrender.com/dashboard)
 
 ## API Documentation
 
